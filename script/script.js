@@ -15,7 +15,7 @@ const player = {
     height: 48,
     frameX: 0,
     frameY: 0,
-    speed: 3,
+    speed: 5,
     moving: false
 }
 // Player Image //
@@ -30,27 +30,16 @@ function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH){
     ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 
-// Background Clear //
-function animate(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-    //player sprite //
-    drawSprite(playerSprite, player.width * player.frameX, player.height * player.frameY, player.width, player.height, player.x, player.y, player.width, player.height);
-    movePlayer();
-    handlePlayerFrame();
-    requestAnimationFrame(animate);
-}
-
-animate();
 
 //Tracking of pressed keys
 window.addEventListener("keydown", function(e){
     keys[e.keyCode] =  true;
-    console.log(keys);
+    player.moving = true;
 });
 
 window.addEventListener("keyup", function(e){
     delete keys[e.keyCode];
+    player.moving = false;
 });
 
 // Moving Player //
@@ -79,6 +68,45 @@ function movePlayer(){
 }
 // Controlling player animation Frame //
 function handlePlayerFrame(){
-    if (player.frameX < 3) player.frameX ++
+    if (player.frameX < 3 && player.moving) player.frameX ++
     else player.frameX = 0;
 }
+
+// // Background Clear //
+// function animate(){
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+//     ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+//     //player sprite //
+//     drawSprite(playerSprite, player.width * player.frameX, player.height * player.frameY, player.width, player.height, player.x, player.y, player.width, player.height);
+//     movePlayer();
+//     handlePlayerFrame();
+//     requestAnimationFrame(animate);
+// }
+
+// animate();
+
+let fps, fpsInterval, startTime, now, then, elapsed;
+
+function startAnimating(fps){
+    fpsInterval = 1000/fps;
+    then = Date.now();
+    startTime = then;
+    animate();
+}
+
+function animate(){
+    requestAnimationFrame(animate);
+    now = Date.now();
+    elapsed = now - then;
+    if (elapsed > fpsInterval){
+        then = now - (elapsed % fpsInterval);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+    //player sprite //
+    drawSprite(playerSprite, player.width * player.frameX, player.height * player.frameY, player.width, player.height, player.x, player.y, player.width, player.height);
+    movePlayer();
+    handlePlayerFrame();
+    }
+}
+
+startAnimating(30);
