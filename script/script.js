@@ -17,7 +17,7 @@ let rounds = 0;
 let score = rounds;
 
 const soundTrack = new Audio();
-soundTrack.src = "../sound/ride.mp3";
+soundTrack.src = "./sound/ride.mp3";
 soundTrack.volume = 0.5;
 
 
@@ -37,7 +37,7 @@ class Badguy {
         this.speed = (Math.random()* 1.5) + 6.5;
         this.action = badguyActions[Math.floor(Math.random() * badguyActions.length)];
         const badguySprite = new Image()
-        badguySprite.src = "../imgs/bad_guy1.png"
+        badguySprite.src = "./imgs/bad_guy1.png"
     }
     draw() {
         drawSprite(badguySprite, this.width * this.frameX, this.height * this.frameY, this.width, this.height, this.x, this.y, this.width, this.height);
@@ -158,11 +158,11 @@ const player = {
 }
 // Player Image //
 const playerSprite = new Image()
-playerSprite.src = "../imgs/hero.png"
+playerSprite.src = "./imgs/hero.png"
 
 // Background Image //
 const background = new Image();
-background.src = "../imgs/background.png"
+background.src = "./imgs/background.png"
 
 function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH) {
     ctx.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
@@ -210,7 +210,7 @@ function handlePlayerFrame() {
 }
 
 const badguySprite = new Image()
-badguySprite.src = "../imgs/bad_guy1.png"
+badguySprite.src = "./imgs/bad_guy1.png"
 
 const badguy = {
     x: 500,
