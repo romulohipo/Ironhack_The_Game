@@ -1,7 +1,10 @@
 //Canvas Element //
+
+let game = 0;
+
 window.onload = () => {
     document.getElementById("start-button").onclick = () => {
-      startGame();
+    game = setInterval(startGame, 40);
     };
 }
 
@@ -19,7 +22,6 @@ soundTrack.volume = 0.5;
 
 
 const badguyActions = ['down']
-// const badguyActions = ['up', 'down', 'right', 'left ',]
 const badguys = [];
 
 
@@ -31,8 +33,8 @@ class Badguy {
         this.frameY = 0;
         this.x = 0;
         this.y = 0;
-        this.speed = 10;
-        // this.speed = (Math.random()* 1.5) + 3.5;
+        // this.speed = 10;
+        this.speed = (Math.random()* 1.5) + 6.5;
         this.action = badguyActions[Math.floor(Math.random() * badguyActions.length)];
         const badguySprite = new Image()
         badguySprite.src = "../imgs/bad_guy1.png"
@@ -42,8 +44,20 @@ class Badguy {
         if (this.frameX < 3) this.frameX++;
         else this.frameX = 0;
     }
-
-    bottom() {
+    // Checking if Crashed //
+    left() {
+        return this.x;
+      }
+    
+      right() {
+        return this.x + this.width;
+      }
+    
+      top() {
+        return this.y;
+      }
+    
+      bottom() {
         return this.y + this.height;
       }
 
@@ -53,7 +67,7 @@ class Badguy {
             if (this.y > canvas.height - this.height) {
                 this.y = 0 - this.height;
                 this.x = Math.random() * (canvas.width - this.width);
-                
+
             }
             else {
                 this.y += this.speed;
@@ -63,7 +77,7 @@ class Badguy {
             if (this.y <= (0)) {
                 this.y = canvas.height - this.width;
                 this.x = Math.random() * canvas.width;
-                
+
             } else {
                 this.y -= this.speed;
             }
@@ -73,7 +87,7 @@ class Badguy {
             if (this.x > (canvas.width)) {
                 this.y = canvas.height - this.height;
                 this.x = Math.random() * canvas.width;
-                
+
             } else {
                 this.x += this.speed;
             }
@@ -83,7 +97,7 @@ class Badguy {
             if (this.x < (0)) {
                 this.y = canvas.height - this.height;
                 this.x = Math.random() * canvas.width;
-                
+
             } else {
                 this.x -= this.speed;
             }
@@ -93,8 +107,8 @@ class Badguy {
 
 badguys.push(new Badguy());
 
-function createBadguys(){
-    if (rounds % 100 !== 0){
+function createBadguys() {
+    if (rounds % 100 !== 0) {
         badguys.push(new Badguy());
     }
 }
@@ -114,20 +128,33 @@ const player = {
     speed: 10,
     moving: false,
 
-    top() {
-        return y;
+    // Cheking if Crashed //
+    left() {
+        return this.x
+    },
+      right() {
+        return this.x + this.width;
       },
-    // metodos top() bottom() right() e left() p verificar limites do objeto
-
-    isCrashedWith(obstacle) {
+    
+      top() {
+        return this.y;
+      },
+    
+      bottom() {
+        return this.y + this.height;
+      },
+    
+      isCrashedWith(Badguy) {
         const condition = !(
-          top() > badguy.bottom()
+          this.bottom() < Badguy.top() ||
+          this.top() > Badguy.bottom() ||
+          this.right() < Badguy.left() ||
+          this.left() > Badguy.right()
         );
     
         return condition;
-        console.log('Crash');
       }
-      // metodo crashedWith(obstacle)
+    // metodo crashedWith(obstacle)
 }
 // Player Image //
 const playerSprite = new Image()
@@ -199,40 +226,48 @@ const badguy = {
 // ANTIGO //
 function handleBadguyFrame() {
     badguy.frameX = 0;
-
-    // // moving //
-    // if (badguy.y < canvas.height + badguy.height) badguy.y += badguy.speed;
-    // else badguy.y = 0 - badguy.height;
 }
-function startGame(){
-// MOTOR do Jogo //
-setInterval(function () {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-    soundTrack.play();
-    
-    rounds += 1
-    //player Sprite //
-    drawSprite(playerSprite, player.width * player.frameX, player.height * player.frameY, player.width, player.height, player.x, player.y, player.width, player.height);
-    // drawSprite(badguySprite, badguy.width * badguy.frameX, badguy.height * badguy.frameY, badguy.width, badguy.height, badguy.x, badguy.y, badguy.width, badguy.height);
+function checkGameOver(Badguy){
+    return player.isCrashedWith(Badguy);
 
-    movePlayer();
+    };
 
-    //Badguy Sprite//
-    // drawSprite(badguySprite, badguy.width * badguy.frameX, badguy.height * badguy.frameY, badguy.width, badguy.height, badguy.x, badguy.y, badguy.width, badguy.height);
-    handleBadguyFrame()
-    handlePlayerFrame();
-    
-    if( rounds % 50 === 0){
-        createBadguys()
+function startGame() {
+    // MOTOR do Jogo //
+
+        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+        soundTrack.play();
+
+        rounds += 1
+        //player Sprite //
+        drawSprite(playerSprite, player.width * player.frameX, player.height * player.frameY, player.width, player.height, player.x, player.y, player.width, player.height);    
+        movePlayer();
+        handlePlayerFrame();
+
+        if (rounds % 50 === 0) {
+            createBadguys()
+        }
+
+        badguys.forEach((el) => {
+            // verifica a nao colisao (chama a player.crashedWith(el))        
+            if (checkGameOver(el)){
+                gameOver();
+                console.log('Crashed')
+            }
+            el.draw()
+            el.update()
+
+        })
     }
 
-    badguys.forEach((el) => {
-        // verifica a nao colisao (chama a player.crashedWith(el))
-        el.draw()
-        el.update()
-    
-    } )
-}, 40)
-}
+    function gameOver (){
+        clearInterval(game)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "40px Arial";
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "red";
+        ctx.fillText("Game Over!", canvas.width / 4, 200);
+        ctx.fillStyle = "white";
+    }
