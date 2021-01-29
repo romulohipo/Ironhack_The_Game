@@ -2,6 +2,7 @@
 *Clone.Madness* is a game built in HTML, CSS, and vanilla JavaScript.
 
 > Click [HERE](https://romulohipo.github.io/Ironhack_The_Game/) to play!
+> Link to the presentation [HERE](https://docs.google.com/presentation/d/19Ueukj_P4sqo95hXMX05erb6uKWTk9hacilrdahjmdk/edit?usp=sharing)
 
 ## INSTALLATION
 * Clone or download this project
